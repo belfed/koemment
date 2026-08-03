@@ -1,8 +1,2 @@
-```
-pnpm install
-pnpm dev
-```
-
-```
-open http://localhost:3000
-```
+# koemment
+Lightweight, self-hostable, headless comment management system for blogs and social apps.
