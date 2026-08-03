@@ -1,0 +1,21 @@
+services:
+  db:
+    container_name: db
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: koemment
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: koemment
+    volumes:
+      - koemment_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5438:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U koemment -d koemment"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  koemment_data:

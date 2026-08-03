@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Post {
+  id           String  @id
+  commentCount Int
+  readOnly     Boolean
+
+  createdAt DateTime @default(now())
+
+  comments Comment[]
+}
+
+model Comment {
+  id       String @id @default(cuid())
+  textMd   String
+  textHtml String
+  score    Int    @default(0)
+
+  postId   String?
+  parentId String?
+  userId   String
+
+  createdAt DateTime  @default(now())
+  editedAt  DateTime  @updatedAt
+  deletedAt DateTime?
+
+  post    Post?     @relation(fields: [postId], references: [id])
+  parent  Comment?  @relation("Replies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies Comment[] @relation("Replies")
+  votes   Vote[]
+
+  @@index([postId])
+  @@index([parentId])
+}
+
+model Vote {
+  id    String @id @default(cuid())
+  value Int
+
+  commentId String?
+  userId    String
+
+  createdAt DateTime @default(now())
+  editedAt  DateTime @updatedAt
+
+  comment Comment? @relation(fields: [commentId], references: [id])
+
+  @@unique([commentId, userId])
+}

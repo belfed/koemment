@@ -1,0 +1,17 @@
+{
+  "name": "koemment",
+  "version": "0.1.0",
+  "description": "Self-hostable comment management system.",
+  "keywords": [
+    "koemment",
+    "js",
+    "ts",
+    "nodejs",
+    "self-host",
+    "comment",
+    "docker",
+    "postgres",
+    "hono"
+  ],
+  "author": "belfed"
+}

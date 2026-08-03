@@ -1,0 +1,22 @@
+# deps
+node_modules/
+
+# env
+.env
+.env.production
+
+# build
+dist/
+
+# editor
+.vscode/*
+!.vscode/launch.json
+!.vscode/*.code-snippets
+.idea/
+
+# logs
+logs/
+*.log
+
+# misc
+.DS_Store
