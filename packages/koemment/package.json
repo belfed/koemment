@@ -1,0 +1,39 @@
+{
+  "name": "@belfed/koemment",
+  "version": "0.1.0",
+  "description": "Headless, framework-agnostic client for koemment",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "clean": "rimraf dist"
+  },
+  "keywords": [
+    "comments",
+    "headless",
+    "blog"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "rimraf": "^6.1.3",
+    "tsdown": "^0.22.14",
+    "typescript": "^7.0.2"
+  }
+}
