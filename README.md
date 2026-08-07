@@ -43,7 +43,3 @@ pnpm dev            # start the API on http://localhost:1000
 | `pnpm db:down`     | Stop the Postgres container                     |
 | `pnpm db:migrate`  | Apply Prisma migrations (dev)                   |
 | `pnpm db:seed`     | Seed the database with demo data                |
-
-## CI
-
-`.github/workflows/ci.yaml` runs typecheck, migrations, tests, and build against a Postgres service on every push/PR to `main`.

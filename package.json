@@ -1,6 +1,6 @@
 {
   "name": "koemment",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Self-hostable comment management system.",
   "scripts": {
     "dev": "pnpm --filter api dev",
