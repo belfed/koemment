@@ -5,7 +5,7 @@ import { db } from "../db/index.js";
 
 const syncToken = process.env.SYNC_TOKEN;
 if (!syncToken) {
-  throw new Error("SYNC_TOKEN non impostato: richiesto per proteggere POST /posts/sync");
+  throw new Error("SYNC_TOKEN is not set: required to protect POST /posts/sync");
 }
 
 export const posts = new Hono();

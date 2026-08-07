@@ -4,6 +4,22 @@ import { db } from "../db/index.js";
 import { requireAuth } from "../middleware/requireAuth.js";
 import type { AppEnv } from "../types.js";
 
+const HTML_ESCAPES: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
+
+function escapeHtml(text: string): string {
+  return text.replace(/[&<>"']/g, (char) => HTML_ESCAPES[char]);
+}
+
+function isValidText(text: unknown): text is string {
+  return typeof text === "string" && text.trim().length > 0;
+}
+
 export const comments = new Hono<AppEnv>();
 
 comments.get("/posts/:postId/comments", async (c) => {
@@ -22,6 +38,10 @@ comments.post("/posts/:postId/comments", requireAuth, async (c) => {
   const body = await c.req.json<{ text: string; parentId?: string }>();
   const user = c.get("user");
 
+  if (!isValidText(body.text)) {
+    return c.json({ error: "text is required" }, 400);
+  }
+
   const post = await db.post.findUnique({ where: { id: postId } });
 
   if (!post) {
@@ -39,7 +59,7 @@ comments.post("/posts/:postId/comments", requireAuth, async (c) => {
         parentId: body.parentId ?? null,
         userId: user.id,
         textMd: body.text,
-        textHtml: body.text,
+        textHtml: escapeHtml(body.text),
       },
     }),
     db.post.update({
@@ -56,6 +76,10 @@ comments.patch("/comments/:commentId", requireAuth, async (c) => {
   const body = await c.req.json<{ text: string }>();
   const user = c.get("user");
 
+  if (!isValidText(body.text)) {
+    return c.json({ error: "text is required" }, 400);
+  }
+
   const comment = await db.comment.findUnique({
     where: { id: commentId },
     include: { post: true },
@@ -69,9 +93,13 @@ comments.patch("/comments/:commentId", requireAuth, async (c) => {
     return c.json({ error: "Post is read-only" }, 403);
   }
 
+  if (comment.userId !== user.id) {
+    return c.json({ error: "Forbidden" }, 403);
+  }
+
   const updated = await db.comment.update({
-    where: { id: commentId, userId: user.id },
-    data: { textMd: body.text, textHtml: body.text },
+    where: { id: commentId },
+    data: { textMd: body.text, textHtml: escapeHtml(body.text) },
   });
 
   return c.json(updated);
@@ -87,9 +115,13 @@ comments.delete("/comments/:commentId", requireAuth, async (c) => {
     return c.json({ error: "Comment not found" }, 404);
   }
 
+  if (comment.userId !== user.id) {
+    return c.json({ error: "Forbidden" }, 403);
+  }
+
   await db.$transaction([
     db.comment.update({
-      where: { id: commentId, userId: user.id },
+      where: { id: commentId },
       data: { deletedAt: new Date() },
     }),
     ...(comment.postId

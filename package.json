@@ -1,7 +1,17 @@
 {
   "name": "koemment",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Self-hostable comment management system.",
+  "scripts": {
+    "dev": "pnpm --filter api dev",
+    "build": "pnpm -r --if-present run build",
+    "test": "pnpm --filter api test",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter api run db:migrate",
+    "db:seed": "pnpm --filter api run db:seed"
+  },
   "keywords": [
     "koemment",
     "js",

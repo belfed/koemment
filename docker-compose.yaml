@@ -17,5 +17,34 @@ services:
       timeout: 5s
       retries: 5
 
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - apps/api/.env
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - PORT=${PORT:-1000}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+      - APP_ORIGIN=${APP_ORIGIN}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - SYNC_TOKEN=${SYNC_TOKEN}
+    ports:
+      - "${PORT:-1000}:${PORT:-1000}"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - default
+      - koemment
+
 volumes:
   koemment_data:
+
+networks:
+  koemment:
+    name: koemment

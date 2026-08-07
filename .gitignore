@@ -20,3 +20,8 @@ logs/
 
 # misc
 .DS_Store
+
+# vendored AI tool skill docs (regenerate from skills-lock.json)
+**/.agents/skills/
+**/.claude/skills/
+**/.windsurf/skills/

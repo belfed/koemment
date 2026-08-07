@@ -2,7 +2,7 @@ import type { Context, Next } from "hono";
 import { auth } from "../lib/auth.js";
 import type { AppEnv } from "../types.js";
 
-export async function requireAuth(c: Context<AppEnv>, next: Next) {
+export async function requireAuth<P extends string>(c: Context<AppEnv, P>, next: Next) {
   const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
   if (!session) {

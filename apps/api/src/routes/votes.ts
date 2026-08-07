@@ -1,12 +1,15 @@
 import { Hono } from "hono";
 
 import { db } from "../db/index.js";
+import { requireAuth } from "../middleware/requireAuth.js";
+import type { AppEnv } from "../types.js";
 
-export const votes = new Hono();
+export const votes = new Hono<AppEnv>();
 
-votes.put("/comments/:commentId/votes", async (c) => {
+votes.put("/comments/:commentId/votes", requireAuth, async (c) => {
   const commentId = c.req.param("commentId");
   const body = await c.req.json<{ value: number }>();
+  const user = c.get("user");
 
   if (body.value !== 1 && body.value !== -1) {
     return c.json({ error: "value must be 1 or -1" }, 400);
@@ -18,7 +21,7 @@ votes.put("/comments/:commentId/votes", async (c) => {
     return c.json({ error: "Comment not found" }, 404);
   }
 
-  const userId = "temp-user-id";
+  const userId = user.id;
   const existingVote = await db.vote.findUnique({
     where: { commentId_userId: { commentId, userId } }
   });
@@ -39,9 +42,10 @@ votes.put("/comments/:commentId/votes", async (c) => {
   return c.json(vote, existingVote ? 200 : 201);
 });
 
-votes.delete("/comments/:commentId/votes", async (c) => {
+votes.delete("/comments/:commentId/votes", requireAuth, async (c) => {
   const commentId = c.req.param("commentId");
-  const userId = "temp-user-id";
+  const user = c.get("user");
+  const userId = user.id;
 
   const existingVote = await db.vote.findUnique({
     where: { commentId_userId: { commentId, userId } }

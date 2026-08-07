@@ -1,14 +1,20 @@
 import "dotenv/config";
-import { afterAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { comments } from "./comments.js";
 import { posts } from "./posts.js";
 import { votes } from "./votes.js";
 import { db } from "../db/index.js";
+import { signUpTestUser } from "../test-utils/auth.js";
 
 describe("vote lifecycle", () => {
   const postId = "test-post-vote-pattern-example";
   let commentId: string;
+  let authHeaders: { cookie: string };
+
+  beforeAll(async () => {
+    ({ headers: authHeaders } = await signUpTestUser());
+  });
 
   afterAll(async () => {
     await db.vote.deleteMany({ where: { comment: { postId } } });
@@ -30,7 +36,7 @@ describe("vote lifecycle", () => {
 
     const createRes = await comments.request(`/posts/${postId}/comments`, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json", ...authHeaders },
       body: JSON.stringify({ text: "hello" })
     });
 
@@ -40,10 +46,20 @@ describe("vote lifecycle", () => {
     commentId = created.id;
   });
 
-  it("should upvote the comment and increment its score", async () => {
+  it("should reject voting without authentication", async () => {
     const voteRes = await votes.request(`/comments/${commentId}/votes`, {
       method: "PUT",
       headers: { "content-type": "application/json" },
+      body: JSON.stringify({ value: 1 })
+    });
+
+    expect(voteRes.status).toBe(401);
+  });
+
+  it("should upvote the comment and increment its score", async () => {
+    const voteRes = await votes.request(`/comments/${commentId}/votes`, {
+      method: "PUT",
+      headers: { "content-type": "application/json", ...authHeaders },
       body: JSON.stringify({ value: 1 })
     });
 
@@ -56,7 +72,7 @@ describe("vote lifecycle", () => {
   it("should change the vote to a downvote and adjust the score", async () => {
     const voteRes = await votes.request(`/comments/${commentId}/votes`, {
       method: "PUT",
-      headers: { "content-type": "application/json" },
+      headers: { "content-type": "application/json", ...authHeaders },
       body: JSON.stringify({ value: -1 })
     });
 
@@ -68,7 +84,8 @@ describe("vote lifecycle", () => {
 
   it("should remove the vote and restore the score", async () => {
     const deleteRes = await votes.request(`/comments/${commentId}/votes`, {
-      method: "DELETE"
+      method: "DELETE",
+      headers: { ...authHeaders }
     });
 
     expect(deleteRes.status).toBe(204);
