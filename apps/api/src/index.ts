@@ -3,6 +3,7 @@ import "dotenv/config";
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 
+import { auth } from "./auth.js";
 import { comments } from "./routes/comments.js";
 import { votes } from "./routes/votes.js";
 
@@ -11,6 +12,8 @@ const port = Number(process.env.PORT ?? 3000);
 const app = new Hono();
 
 app.get("/health", (c) => c.json({ status: "healthy" }, 200));
+
+app.all("/api/auth/*", (c) => auth.handler(c.req.raw));
 
 app.route("/", comments);
 app.route("/", votes);

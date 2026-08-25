@@ -2,9 +2,8 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
 
+import { requireAuth } from "../middleware/require-auth.js";
 import { voteRepository } from "../repositories/vote.repository.js";
-
-const userId = "dummy";
 
 export const votes = new Hono();
 
@@ -13,6 +12,7 @@ const voteBodySchema = z.object({ value: z.union([z.literal(1), z.literal(-1)]) 
 
 votes.post(
   "/comments/:commentId/votes",
+  requireAuth,
   zValidator("param", commentIdParamSchema),
   zValidator("json", voteBodySchema, (result, c) => {
     if (!result.success) {
@@ -22,6 +22,7 @@ votes.post(
   async (c) => {
     const { commentId } = c.req.valid("param");
     const { value } = c.req.valid("json");
+    const { id: userId } = c.get("user");
 
     const { vote, created } = await voteRepository.upsert(commentId, userId, value);
 
@@ -29,8 +30,9 @@ votes.post(
   },
 );
 
-votes.delete("/comments/:commentId/votes", zValidator("param", commentIdParamSchema), async (c) => {
+votes.delete("/comments/:commentId/votes", requireAuth, zValidator("param", commentIdParamSchema), async (c) => {
   const { commentId } = c.req.valid("param");
+  const { id: userId } = c.get("user");
 
   const deleted = await voteRepository.remove(commentId, userId);
 
