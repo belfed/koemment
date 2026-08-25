@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { db } from "../db/db.js";
+import db from "../db/db.js";
 
 const userId = "dummy";
 
@@ -37,4 +37,33 @@ votes.post("/comments/:commentId/votes", async (c) => {
   });
 
   return c.json(vote, created ? 201 : 200);
+});
+
+votes.delete("/comments/:commentId/votes", async (c) => {
+  const commentId = c.req.param("commentId") as string;
+
+  const deleted = await db.$transaction(async (tx) => {
+    const existing = await tx.vote.findUnique({
+      where: { commentId_userId: { commentId, userId } },
+    });
+
+    if (!existing) return false;
+
+    await tx.vote.delete({
+      where: { commentId_userId: { commentId, userId } },
+    });
+
+    await tx.comment.update({
+      where: { id: commentId },
+      data: { score: { decrement: existing.value } },
+    });
+
+    return true;
+  });
+
+  if (!deleted) {
+    return c.json({ error: "Vote not found" }, 404);
+  }
+
+  return c.body(null, 204);
 });

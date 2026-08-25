@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { db } from "../db/db.js";
+import db from "../db/db.js";
 import type { Comment } from "../generated/prisma/client.js";
 
 export const comments = new Hono();
