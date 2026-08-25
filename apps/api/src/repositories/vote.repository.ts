@@ -1,0 +1,52 @@
+import db from "../db/db.js";
+import type { Vote } from "../generated/prisma/client.js";
+
+export class VoteRepository {
+  async upsert(commentId: string, userId: string, value: number): Promise<{ vote: Vote; created: boolean }> {
+    return db.$transaction(async (tx) => {
+      const existing = await tx.vote.findUnique({
+        where: { commentId_userId: { commentId, userId } },
+      });
+
+      const delta = existing ? value - existing.value : value;
+
+      const vote = await tx.vote.upsert({
+        where: { commentId_userId: { commentId, userId } },
+        update: { value },
+        create: { commentId, userId, value },
+      });
+
+      if (delta !== 0) {
+        await tx.comment.update({
+          where: { id: commentId },
+          data: { score: { increment: delta } },
+        });
+      }
+
+      return { vote, created: !existing };
+    });
+  }
+
+  async remove(commentId: string, userId: string): Promise<boolean> {
+    return db.$transaction(async (tx) => {
+      const existing = await tx.vote.findUnique({
+        where: { commentId_userId: { commentId, userId } },
+      });
+
+      if (!existing) return false;
+
+      await tx.vote.delete({
+        where: { commentId_userId: { commentId, userId } },
+      });
+
+      await tx.comment.update({
+        where: { id: commentId },
+        data: { score: { decrement: existing.value } },
+      });
+
+      return true;
+    });
+  }
+}
+
+export const voteRepository = new VoteRepository();

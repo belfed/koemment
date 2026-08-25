@@ -6,7 +6,7 @@ import { Hono } from "hono";
 import { comments } from "./routes/comments.js";
 import { votes } from "./routes/votes.js";
 
-const port = Number(process.env.API_PORT ?? 3000);
+const port = Number(process.env.PORT ?? 3000);
 
 const app = new Hono();
 

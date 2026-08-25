@@ -1,29 +1,28 @@
+import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import db from "../db/db.js";
-import type { Comment } from "../generated/prisma/client.js";
+import { z } from "zod";
+
+import { commentRepository } from "../repositories/comment.repository.js";
 
 export const comments = new Hono();
 
-comments.get("/posts/:postId/comments", async (c) => {
-  const postId = c.req.param("postId") as string;
+const postIdParamSchema = z.object({ postId: z.string().min(1) });
+const commentIdParamSchema = z.object({ commentId: z.string().min(1) });
 
-  const result = await db.comment.findMany({
-    where: { postId },
-    orderBy: { createdAt: "asc" },
-  });
+comments.get("/posts/:postId/comments", zValidator("param", postIdParamSchema), async (c) => {
+  const { postId } = c.req.valid("param");
+
+  const result = await commentRepository.findManyByPostId(postId);
 
   return c.json(result);
 });
 
-comments.delete("/comments/:commentId", async (c) => {
-  const commentId = c.req.param("commentId") as string;
+comments.delete("/comments/:commentId", zValidator("param", commentIdParamSchema), async (c) => {
+  const { commentId } = c.req.valid("param");
 
-  const { count } = await db.comment.updateMany({
-    where: { id: commentId },
-    data: { deletedAt: new Date() },
-  });
+  const deleted = await commentRepository.softDelete(commentId);
 
-  if (count === 0) {
+  if (!deleted) {
     return c.json({ error: "Comment not found" }, 404);
   }
 

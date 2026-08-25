@@ -1,65 +1,38 @@
+import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import db from "../db/db.js";
+import { z } from "zod";
+
+import { voteRepository } from "../repositories/vote.repository.js";
 
 const userId = "dummy";
 
 export const votes = new Hono();
 
-votes.post("/comments/:commentId/votes", async (c) => {
-  const commentId = c.req.param("commentId") as string;
-  const { value } = await c.req.json<{ value: number }>();
+const commentIdParamSchema = z.object({ commentId: z.string().min(1) });
+const voteBodySchema = z.object({ value: z.union([z.literal(1), z.literal(-1)]) });
 
-  if (![-1, 1].includes(value)) {
-    return c.json({ error: "Value must be 1 or -1" }, 400);
-  }
-
-  const { vote, created } = await db.$transaction(async (tx) => {
-    const existing = await tx.vote.findUnique({
-      where: { commentId_userId: { commentId, userId } },
-    });
-
-    const delta = existing ? value - existing.value : value;
-
-    const vote = await tx.vote.upsert({
-      where: { commentId_userId: { commentId, userId } },
-      update: { value: value },
-      create: { commentId, userId, value: value },
-    });
-
-    if (delta !== 0) {
-      await tx.comment.update({
-        where: { id: commentId },
-        data: { score: { increment: delta } },
-      });
+votes.post(
+  "/comments/:commentId/votes",
+  zValidator("param", commentIdParamSchema),
+  zValidator("json", voteBodySchema, (result, c) => {
+    if (!result.success) {
+      return c.json({ error: "Value must be 1 or -1" }, 400);
     }
+  }),
+  async (c) => {
+    const { commentId } = c.req.valid("param");
+    const { value } = c.req.valid("json");
 
-    return { vote, created: !existing };
-  });
+    const { vote, created } = await voteRepository.upsert(commentId, userId, value);
 
-  return c.json(vote, created ? 201 : 200);
-});
+    return c.json(vote, created ? 201 : 200);
+  },
+);
 
-votes.delete("/comments/:commentId/votes", async (c) => {
-  const commentId = c.req.param("commentId") as string;
+votes.delete("/comments/:commentId/votes", zValidator("param", commentIdParamSchema), async (c) => {
+  const { commentId } = c.req.valid("param");
 
-  const deleted = await db.$transaction(async (tx) => {
-    const existing = await tx.vote.findUnique({
-      where: { commentId_userId: { commentId, userId } },
-    });
-
-    if (!existing) return false;
-
-    await tx.vote.delete({
-      where: { commentId_userId: { commentId, userId } },
-    });
-
-    await tx.comment.update({
-      where: { id: commentId },
-      data: { score: { decrement: existing.value } },
-    });
-
-    return true;
-  });
+  const deleted = await voteRepository.remove(commentId, userId);
 
   if (!deleted) {
     return c.json({ error: "Vote not found" }, 404);
