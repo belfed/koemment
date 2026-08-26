@@ -1,5 +1,11 @@
 # @belfed/koemment
 
+## 0.3.0
+
+### Minor Changes
+
+- Add `limit`/`offset` pagination to the comment listing endpoint, capped at 200 per page, so a heavily-commented post can't return an unbounded response. `KoemmentClient.getComments` accepts an optional `{ limit, offset }` to use it.
+
 ## 0.2.1
 
 ### Patch Changes
