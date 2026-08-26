@@ -5,11 +5,12 @@ export * from "./generated/prisma/client.js";
 
 export type CommentWithAuthorAndVote = {
   id: string;
-  content: string;
+  content: string | null;
   score: number;
   createdAt: Date;
   parentId: string | null;
   postId: string;
+  isDeleted: boolean;
   author: { name: string; image: string | null };
   myVote: 1 | -1 | null;
 };

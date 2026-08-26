@@ -36,6 +36,10 @@ await client.removeVote(comment.id);
 await client.deleteComment(comment.id);
 ```
 
+A deleted comment is kept (so replies to it still have a parent) but stripped down: `isDeleted` is
+`true` and `content` is `null`. Render those as a `[deleted]` placeholder rather than filtering them
+out, the way Reddit does.
+
 Every request is sent with `credentials: "include"`, so the browser's koemment session cookie is
 attached automatically. `createComment`, `deleteComment`, `vote`, and `removeVote` all require the
 visitor to be logged in (via GitHub or Google) with the koemment instance this client points at.

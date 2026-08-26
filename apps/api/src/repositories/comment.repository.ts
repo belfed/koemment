@@ -21,11 +21,12 @@ export class CommentRepository {
 
     return comments.map((comment) => ({
       id: comment.id,
-      content: comment.content,
+      content: comment.deletedAt ? null : comment.content,
       score: comment.score,
       createdAt: comment.createdAt,
       parentId: comment.parentId,
       postId: comment.postId,
+      isDeleted: comment.deletedAt !== null,
       author: { name: comment.user.name, image: comment.user.image },
       myVote: (comment.upvotes[0]?.value ?? null) as 1 | -1 | null,
     }));
