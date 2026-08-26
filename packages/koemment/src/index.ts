@@ -1,4 +1,4 @@
-import type { Comment, CommentWithAuthorAndVote, Vote } from "@belfed/db";
+import type { Comment, CommentWithAuthorAndVote, Session, User, Vote } from "@belfed/db";
 
 async function throwIfError(res: Response): Promise<void> {
   if (res.ok) return;
@@ -53,5 +53,43 @@ export class KoemmentClient {
       credentials: "include",
     });
     await throwIfError(res);
+  }
+
+  async signInWithGithub(): Promise<void> {
+    await this.signInWithSocialProvider("github");
+  }
+
+  async signInWithGoogle(): Promise<void> {
+    await this.signInWithSocialProvider("google");
+  }
+
+  private async signInWithSocialProvider(provider: "github" | "google"): Promise<void> {
+    const res = await fetch(`${this.baseUrl}/api/auth/sign-in/social`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ provider }),
+    });
+    await throwIfError(res);
+    const { url } = (await res.json()) as { url: string };
+    window.location.href = url;
+  }
+
+  async signOut(): Promise<void> {
+    const res = await fetch(`${this.baseUrl}/api/auth/sign-out`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({}),
+    });
+    await throwIfError(res);
+  }
+
+  async getSession(): Promise<{ user: User; session: Session } | null> {
+    const res = await fetch(`${this.baseUrl}/api/auth/get-session`, {
+      credentials: "include",
+    });
+    await throwIfError(res);
+    return (await res.json()) as { user: User; session: Session } | null;
   }
 }
