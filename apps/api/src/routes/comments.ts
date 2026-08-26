@@ -13,15 +13,25 @@ const createCommentBodySchema = z.object({
   content: z.string().min(1),
   parentId: z.string().min(1).optional(),
 });
-
-comments.get("/posts/:postId/comments", zValidator("param", postIdParamSchema), async (c) => {
-  const { postId } = c.req.valid("param");
-  const user = await getOptionalUser(c.req.raw.headers);
-
-  const result = await commentRepository.findManyByPostId(postId, user?.id ?? null);
-
-  return c.json(result);
+const listCommentsQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(200).optional().default(100),
+  offset: z.coerce.number().int().min(0).optional().default(0),
 });
+
+comments.get(
+  "/posts/:postId/comments",
+  zValidator("param", postIdParamSchema),
+  zValidator("query", listCommentsQuerySchema),
+  async (c) => {
+    const { postId } = c.req.valid("param");
+    const { limit, offset } = c.req.valid("query");
+    const user = await getOptionalUser(c.req.raw.headers);
+
+    const result = await commentRepository.findManyByPostId(postId, user?.id ?? null, limit, offset);
+
+    return c.json(result);
+  },
+);
 
 comments.post(
   "/posts/:postId/comments",

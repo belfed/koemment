@@ -2,10 +2,17 @@ import db from "@belfed/db";
 import type { Comment, CommentWithAuthorAndVote } from "@belfed/db";
 
 export class CommentRepository {
-  async findManyByPostId(postId: string, currentUserId: string | null): Promise<CommentWithAuthorAndVote[]> {
+  async findManyByPostId(
+    postId: string,
+    currentUserId: string | null,
+    limit: number,
+    offset: number,
+  ): Promise<CommentWithAuthorAndVote[]> {
     const comments = await db.comment.findMany({
       where: { postId },
       orderBy: { createdAt: "asc" },
+      take: limit,
+      skip: offset,
       include: {
         user: { select: { name: true, image: true } },
         upvotes: { where: { userId: currentUserId ?? "" } },
