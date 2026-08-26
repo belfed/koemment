@@ -1,5 +1,11 @@
 # api
 
+## 0.2.1
+
+### Patch Changes
+
+- 59eef17: Allow requests from trusted origins, configured via `TRUSTED_ORIGINS`, so the published client can actually be used from a different domain (e.g. a blog or app calling the API from the browser).
+
 ## 0.2.0
 
 ### Minor Changes

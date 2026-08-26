@@ -55,20 +55,20 @@ export class KoemmentClient {
     await throwIfError(res);
   }
 
-  async signInWithGithub(): Promise<void> {
-    await this.signInWithSocialProvider("github");
+  async signInWithGithub(callbackURL: string = window.location.href): Promise<void> {
+    await this.signInWithSocialProvider("github", callbackURL);
   }
 
-  async signInWithGoogle(): Promise<void> {
-    await this.signInWithSocialProvider("google");
+  async signInWithGoogle(callbackURL: string = window.location.href): Promise<void> {
+    await this.signInWithSocialProvider("google", callbackURL);
   }
 
-  private async signInWithSocialProvider(provider: "github" | "google"): Promise<void> {
+  private async signInWithSocialProvider(provider: "github" | "google", callbackURL: string): Promise<void> {
     const res = await fetch(`${this.baseUrl}/api/auth/sign-in/social`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ provider }),
+      body: JSON.stringify({ provider, callbackURL }),
     });
     await throwIfError(res);
     const { url } = (await res.json()) as { url: string };

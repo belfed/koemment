@@ -1,5 +1,11 @@
 # @belfed/koemment
 
+## 0.2.1
+
+### Patch Changes
+
+- Fix signInWithGithub and signInWithGoogle redirecting back to the API's own URL after login instead of where the visitor started. They now default to the current page, and accept an explicit callback URL to override it.
+
 ## 0.2.0
 
 ### Minor Changes
