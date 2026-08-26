@@ -2,14 +2,23 @@ import "dotenv/config";
 
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 
-import { auth } from "./auth.js";
+import { auth, trustedOrigins } from "./auth.js";
 import { comments } from "./routes/comments.js";
 import { votes } from "./routes/votes.js";
 
 const port = Number(process.env.PORT ?? 3000);
 
 const app = new Hono();
+
+app.use(
+  "*",
+  cors({
+    origin: trustedOrigins,
+    credentials: true,
+  }),
+);
 
 app.get("/health", (c) => c.json({ status: "healthy" }, 200));
 
