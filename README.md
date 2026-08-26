@@ -6,7 +6,7 @@ Self-hostable comment management system.
 
 pnpm workspace with two folders of packages:
 
-- [`apps/api`](apps/api) — the Hono + Prisma API server: comments, votes, and GitHub/Google login via better-auth.
+- [`apps/api`](apps/api) — the Hono + Prisma API server: comments (paginated), votes, GitHub/Google login via better-auth, and rate-limited mutations.
 - [`packages/db`](packages/db) — `@belfed/db`, the shared Prisma schema/client. Private, internal only.
 - [`packages/koemment`](packages/koemment) — [`@belfed/koemment`](https://www.npmjs.com/package/@belfed/koemment), the published client for reading and writing comments from a blog or app.
 
