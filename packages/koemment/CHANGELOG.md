@@ -1,5 +1,11 @@
 # @belfed/koemment
 
+## 0.3.1
+
+### Patch Changes
+
+- 59e57cc: Document the comment list pagination and mutation rate limiting in the READMEs.
+
 ## 0.3.0
 
 ### Minor Changes

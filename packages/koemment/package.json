@@ -1,7 +1,7 @@
 {
   "name": "@belfed/koemment",
   "type": "module",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Client for reading and writing comments via the koemment API.",
   "author": "belfed",
   "license": "MIT",
