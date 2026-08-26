@@ -20,3 +20,8 @@ export const requireAuth = createMiddleware<Env>(async (c, next) => {
 
   await next();
 });
+
+export async function getOptionalUser(headers: Headers): Promise<typeof auth.$Infer.Session.user | null> {
+  const session = await auth.api.getSession({ headers });
+  return session?.user ?? null;
+}

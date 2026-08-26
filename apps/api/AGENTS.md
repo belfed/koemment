@@ -17,11 +17,10 @@ All the following instructions are valid throughout the `api` module:
 - Each repository MUST have an instance class `<Entity>Repository` with conventional methods, according to the needs (e.g. `findById(id: string)` is not always needed).
 
 # Prisma instructions
-- NEVER change files under `/src/generated`: those are automatically generated files and changing them will break the application.
-- ALWAYS use the Prisma singleton exported from `/src/db/db.ts` for queries.
+- The Prisma schema, generated client, and singleton live in the `@koemment/db` package (`packages/db`), shared with `packages/koemment`. See `packages/db/AGENTS.md` for its own rules (never hand-edit generated files, always regenerate after schema changes).
+- ALWAYS use the Prisma singleton exported from `@koemment/db` for queries.
 - ALWAYS use Prisma transactions for dependent queries.
 - ALWAYS get the query result (for SELECT, INSERT, UPDATE, DELETE, UPSERT) whenever possible to ensure the correctness of the query.
-- ALWAYS run `pnpm dlx prisma generate` command when the schema is changed.
 
 # Code instructions
 - ALWAYS sort imports in this order, leaving a blank row between each section:

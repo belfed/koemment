@@ -1,5 +1,5 @@
-import db from "../db/db.js";
-import type { Vote } from "../generated/prisma/client.js";
+import db from "@koemment/db";
+import type { Vote } from "@koemment/db";
 
 export class VoteRepository {
   async upsert(commentId: string, userId: string, value: number): Promise<{ vote: Vote; created: boolean }> {
