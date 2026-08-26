@@ -2,6 +2,16 @@ import { prismaAdapter } from "@better-auth/prisma-adapter";
 import { betterAuth } from "better-auth";
 import db from "@belfed/db";
 
+function requireEnv(name: string): string {
+  const value = process.env[name];
+
+  if (!value) {
+    throw new Error(`Missing required environment variable: ${name}`);
+  }
+
+  return value;
+}
+
 export const trustedOrigins = (process.env.TRUSTED_ORIGINS ?? "")
   .split(",")
   .map((origin) => origin.trim())
@@ -13,12 +23,12 @@ export const auth = betterAuth({
   trustedOrigins,
   socialProviders: {
     github: {
-      clientId: process.env.GITHUB_CLIENT_ID as string,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+      clientId: requireEnv("GITHUB_CLIENT_ID"),
+      clientSecret: requireEnv("GITHUB_CLIENT_SECRET"),
     },
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      clientId: requireEnv("GOOGLE_CLIENT_ID"),
+      clientSecret: requireEnv("GOOGLE_CLIENT_SECRET"),
     },
   },
 });
