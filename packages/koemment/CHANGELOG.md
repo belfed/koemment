@@ -1,5 +1,11 @@
 # @belfed/koemment
 
+## 0.2.0
+
+### Minor Changes
+
+- 558c4c6: Add signInWithGithub, signInWithGoogle, signOut, and getSession methods to the client.
+
 ## 0.1.1
 
 ### Patch Changes
