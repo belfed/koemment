@@ -1,5 +1,5 @@
-import db from "@koemment/db";
-import type { Vote } from "@koemment/db";
+import db from "@belfed/db";
+import type { Vote } from "@belfed/db";
 
 export class VoteRepository {
   async upsert(commentId: string, userId: string, value: number): Promise<{ vote: Vote; created: boolean }> {

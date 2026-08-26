@@ -1,4 +1,4 @@
-import type { Comment, CommentWithAuthorAndVote, Vote } from "@koemment/db";
+import type { Comment, CommentWithAuthorAndVote, Vote } from "@belfed/db";
 
 async function throwIfError(res: Response): Promise<void> {
   if (res.ok) return;

@@ -8,5 +8,5 @@ All the following instructions are valid throughout the `db` module:
 
 # Prisma instructions
 - NEVER change files under `/src/generated`: those are automatically generated files and changing them will break the application.
-- ALWAYS run `pnpm generate` (or `pnpm --filter @koemment/db generate`) after changing `prisma/schema.prisma`, and confirm the client actually regenerated (`prisma migrate dev` does not reliably trigger this on its own).
+- ALWAYS run `pnpm generate` (or `pnpm --filter @belfed/db generate`) after changing `prisma/schema.prisma`, and confirm the client actually regenerated (`prisma migrate dev` does not reliably trigger this on its own).
 - ALWAYS run `pnpm build` after changing the schema or `src/index.ts` — consumers resolve the compiled `dist/` output, not the TypeScript source.

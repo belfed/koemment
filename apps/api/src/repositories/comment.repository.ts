@@ -1,5 +1,5 @@
-import db from "@koemment/db";
-import type { Comment, CommentWithAuthorAndVote } from "@koemment/db";
+import db from "@belfed/db";
+import type { Comment, CommentWithAuthorAndVote } from "@belfed/db";
 
 export class CommentRepository {
   async findManyByPostId(postId: string, currentUserId: string | null): Promise<CommentWithAuthorAndVote[]> {

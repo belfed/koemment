@@ -20,6 +20,30 @@ services:
       - default
       - koemment
 
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - apps/api/.env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-koemment}:${POSTGRES_PASSWORD:-changeme}@db:5432/${POSTGRES_DB:-koemment}?schema=public
+    ports:
+      - "1000:1000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:1000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - default
+      - koemment
+
 volumes:
   db_data:
 
