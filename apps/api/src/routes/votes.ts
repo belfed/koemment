@@ -24,9 +24,13 @@ votes.post(
     const { value } = c.req.valid("json");
     const { id: userId } = c.get("user");
 
-    const { vote, created } = await voteRepository.upsert(commentId, userId, value);
+    const result = await voteRepository.upsert(commentId, userId, value);
 
-    return c.json(vote, created ? 201 : 200);
+    if (!result) {
+      return c.json({ error: "Comment not found" }, 404);
+    }
+
+    return c.json(result.vote, result.created ? 201 : 200);
   },
 );
 

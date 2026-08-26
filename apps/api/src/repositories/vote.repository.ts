@@ -2,8 +2,14 @@ import db from "@belfed/db";
 import type { Vote } from "@belfed/db";
 
 export class VoteRepository {
-  async upsert(commentId: string, userId: string, value: number): Promise<{ vote: Vote; created: boolean }> {
+  async upsert(commentId: string, userId: string, value: number): Promise<{ vote: Vote; created: boolean } | null> {
     return db.$transaction(async (tx) => {
+      const comment = await tx.comment.findUnique({ where: { id: commentId } });
+
+      if (!comment) {
+        return null;
+      }
+
       const existing = await tx.vote.findUnique({
         where: { commentId_userId: { commentId, userId } },
       });
