@@ -1,5 +1,17 @@
 # api
 
+## 0.3.0
+
+### Minor Changes
+
+- Add `limit`/`offset` pagination to the comment listing endpoint, capped at 200 per page, so a heavily-commented post can't return an unbounded response. `KoemmentClient.getComments` accepts an optional `{ limit, offset }` to use it.
+- Rate-limit comment creation/deletion and voting to 20 requests per minute per client, to prevent spam and abuse of the mutating endpoints.
+
+### Patch Changes
+
+- Fail fast at startup with a clear error when a required GitHub/Google OAuth environment variable is missing, instead of silently passing `undefined` through to better-auth.
+- Return a 404 instead of crashing with a raw database error when voting on a comment that doesn't exist.
+
 ## 0.2.1
 
 ### Patch Changes
