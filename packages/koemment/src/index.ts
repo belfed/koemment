@@ -9,8 +9,13 @@ async function throwIfError(res: Response): Promise<void> {
 export class KoemmentClient {
   constructor(private readonly baseUrl: string) {}
 
-  async getComments(postId: string): Promise<CommentWithAuthorAndVote[]> {
-    const res = await fetch(`${this.baseUrl}/posts/${postId}/comments`, {
+  async getComments(postId: string, options?: { limit?: number; offset?: number }): Promise<CommentWithAuthorAndVote[]> {
+    const params = new URLSearchParams();
+    if (options?.limit !== undefined) params.set("limit", String(options.limit));
+    if (options?.offset !== undefined) params.set("offset", String(options.offset));
+    const query = params.size > 0 ? `?${params.toString()}` : "";
+
+    const res = await fetch(`${this.baseUrl}/posts/${postId}/comments${query}`, {
       credentials: "include",
     });
     await throwIfError(res);
