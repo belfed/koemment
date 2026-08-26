@@ -8,8 +8,6 @@ import { auth, trustedOrigins } from "./auth.js";
 import { comments } from "./routes/comments.js";
 import { votes } from "./routes/votes.js";
 
-const port = Number(process.env.PORT ?? 3000);
-
 const app = new Hono();
 
 app.use(
@@ -30,7 +28,7 @@ app.route("/", votes);
 serve(
   {
     fetch: app.fetch,
-    port,
+    port: 3000,
   },
   (info) => {
     console.log(`Server is running on http://localhost:${info.port}`);

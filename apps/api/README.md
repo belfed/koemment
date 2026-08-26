@@ -12,12 +12,14 @@ pnpm --filter api dev
 ```
 
 ```
-open http://localhost:1000/health
+open http://localhost:3000/health
 ```
 
-See [`.env.example`](.env.example) for the required environment variables (database connection,
-`BETTER_AUTH_SECRET`/`BETTER_AUTH_URL`, `TRUSTED_ORIGINS`, and the GitHub/Google OAuth credentials).
-The server fails fast at startup if a required OAuth variable is missing.
+The server always listens on port `3000`; there is no `PORT` environment variable. When running via
+`docker compose`, the host-side port is `API_PORT` (in the root `.env`), mapped to the container's
+fixed `3000`. See [`.env.example`](.env.example) for the other required environment variables
+(database connection, `BETTER_AUTH_SECRET`/`BETTER_AUTH_URL`, `TRUSTED_ORIGINS`, and the GitHub/Google
+OAuth credentials). The server fails fast at startup if a required OAuth variable is missing.
 
 ## Endpoints
 

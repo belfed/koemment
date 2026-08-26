@@ -1,5 +1,14 @@
 # api
 
+## 1.0.0
+
+### Major Changes
+
+- **Breaking:** the server no longer reads a `PORT` environment variable — it always listens on `3000`.
+  Configure the host-side port for `docker compose` via the new `API_PORT` variable in the root `.env`
+  instead (mapped to the container's fixed `3000`). Operators upgrading a self-hosted instance need to
+  add `API_PORT` to their root `.env` and drop `PORT` from `apps/api/.env` if set.
+
 ## 0.3.1
 
 ### Patch Changes
