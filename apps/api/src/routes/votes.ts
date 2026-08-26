@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 
 import { requireAuth } from "../middleware/require-auth.js";
+import { writeRateLimit } from "../middleware/rate-limit.js";
 import { voteRepository } from "../repositories/vote.repository.js";
 
 export const votes = new Hono();
@@ -13,6 +14,7 @@ const voteBodySchema = z.object({ value: z.union([z.literal(1), z.literal(-1)]) 
 votes.post(
   "/comments/:commentId/votes",
   requireAuth,
+  writeRateLimit,
   zValidator("param", commentIdParamSchema),
   zValidator("json", voteBodySchema, (result, c) => {
     if (!result.success) {
@@ -34,15 +36,21 @@ votes.post(
   },
 );
 
-votes.delete("/comments/:commentId/votes", requireAuth, zValidator("param", commentIdParamSchema), async (c) => {
-  const { commentId } = c.req.valid("param");
-  const { id: userId } = c.get("user");
+votes.delete(
+  "/comments/:commentId/votes",
+  requireAuth,
+  writeRateLimit,
+  zValidator("param", commentIdParamSchema),
+  async (c) => {
+    const { commentId } = c.req.valid("param");
+    const { id: userId } = c.get("user");
 
-  const deleted = await voteRepository.remove(commentId, userId);
+    const deleted = await voteRepository.remove(commentId, userId);
 
-  if (!deleted) {
-    return c.json({ error: "Vote not found" }, 404);
-  }
+    if (!deleted) {
+      return c.json({ error: "Vote not found" }, 404);
+    }
 
-  return c.body(null, 204);
-});
+    return c.body(null, 204);
+  },
+);

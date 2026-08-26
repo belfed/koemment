@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { z } from "zod";
 
 import { getOptionalUser, requireAuth } from "../middleware/require-auth.js";
+import { writeRateLimit } from "../middleware/rate-limit.js";
 import { commentRepository } from "../repositories/comment.repository.js";
 
 export const comments = new Hono();
@@ -36,6 +37,7 @@ comments.get(
 comments.post(
   "/posts/:postId/comments",
   requireAuth,
+  writeRateLimit,
   zValidator("param", postIdParamSchema),
   zValidator("json", createCommentBodySchema),
   async (c) => {
@@ -56,6 +58,7 @@ comments.post(
 comments.delete(
   "/comments/:commentId",
   requireAuth,
+  writeRateLimit,
   zValidator("param", commentIdParamSchema),
   async (c) => {
     const { commentId } = c.req.valid("param");

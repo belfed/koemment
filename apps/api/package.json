@@ -19,6 +19,7 @@
     "better-auth": "^1.7.1",
     "dotenv": "^17.4.2",
     "hono": "^4.13.3",
+    "hono-rate-limiter": "^0.5.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
