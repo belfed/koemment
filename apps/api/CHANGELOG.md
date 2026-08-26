@@ -1,5 +1,11 @@
 # api
 
+## 1.1.0
+
+### Minor Changes
+
+- c99851f: Mask deleted comments in the listing response instead of returning their original content unchanged. Comments now include `isDeleted`, and `content` is `null` when `isDeleted` is `true`.
+
 ## 1.0.0
 
 ### Major Changes
