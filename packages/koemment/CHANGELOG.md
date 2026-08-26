@@ -1,5 +1,11 @@
 # @belfed/koemment
 
+## 0.1.1
+
+### Patch Changes
+
+- 4232c3c: Add a real README with installation and usage instructions.
+
 ## 0.1.0
 
 ### Minor Changes
