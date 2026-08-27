@@ -1,6 +1,6 @@
 {
   "name": "@belfed/db",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "type": "module",
   "main": "./dist/index.js",
@@ -13,7 +13,8 @@
   ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "migrate:deploy": "prisma migrate deploy"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",

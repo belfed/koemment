@@ -16,6 +16,7 @@ pnpm workspace with two folders of packages:
 pnpm install
 docker compose up -d db        # Postgres
 pnpm --filter @belfed/db generate
+pnpm --filter @belfed/db migrate:deploy
 pnpm --filter api dev
 ```
 
@@ -23,7 +24,9 @@ Each package has its own `README.md`/`AGENTS.md` with more detail.
 
 ## Deploying
 
-`docker compose up -d` builds and runs the `api` service (see `apps/api/Dockerfile`) alongside Postgres.
+`docker compose up -d` builds and runs Postgres, a one-shot `migrate` service (applies pending Prisma
+migrations via `prisma migrate deploy`), and the `api` service — `api` won't start until `migrate`
+completes successfully, so the database schema is always up to date on every deploy.
 
 ## Versioning
 

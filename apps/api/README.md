@@ -8,6 +8,7 @@ Hono + Prisma API server for koemment: comments, votes, and GitHub/Google login 
 pnpm install
 docker compose up -d db        # Postgres
 pnpm --filter @belfed/db generate
+pnpm --filter @belfed/db migrate:deploy
 pnpm --filter api dev
 ```
 
@@ -20,6 +21,9 @@ The server always listens on port `3000`; there is no `PORT` environment variabl
 fixed `3000`. See [`.env.example`](.env.example) for the other required environment variables
 (database connection, `BETTER_AUTH_SECRET`/`BETTER_AUTH_URL`, `TRUSTED_ORIGINS`, and the GitHub/Google
 OAuth credentials). The server fails fast at startup if a required OAuth variable is missing.
+
+Under `docker compose`, pending Prisma migrations are applied by a one-shot `migrate` service (see the
+`migrator` target in [`Dockerfile`](Dockerfile)) before the `api` container is allowed to start.
 
 ## Endpoints
 

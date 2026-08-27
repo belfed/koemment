@@ -1,5 +1,13 @@
 # api
 
+## 1.1.1
+
+### Patch Changes
+
+- Add a one-shot `migrate` docker-compose service (new `migrator` Dockerfile target running `prisma migrate deploy`) that the `api` container now waits on before starting, so pending schema migrations are always applied on deploy instead of silently never running.
+- Updated dependencies
+  - @belfed/db@0.2.1
+
 ## 1.1.0
 
 ### Minor Changes

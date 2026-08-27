@@ -12,6 +12,9 @@ RUN pnpm --filter @belfed/db build
 RUN pnpm --filter api build
 RUN pnpm --filter api --prod deploy /app/pruned
 
+FROM builder AS migrator
+CMD ["pnpm", "--filter", "@belfed/db", "migrate:deploy"]
+
 FROM node:22-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production

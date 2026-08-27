@@ -20,6 +20,22 @@ services:
       - default
       - koemment
 
+  migrate:
+    container_name: migrate
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: migrator
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-koemment}:${POSTGRES_PASSWORD:-changeme}@db:5432/${POSTGRES_DB:-koemment}?schema=public
+    networks:
+      - default
+      - koemment
+
   api:
     container_name: api
     build:
@@ -29,6 +45,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     env_file:
       - apps/api/.env
     environment:
